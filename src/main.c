@@ -19,7 +19,7 @@
 
 
 static char* itoa(int value, char* result, int base);
-
+float lecturaAnalogica(void);
 /*=====[Macros de definición de constantes privadas]=========================*/
 
 
@@ -32,7 +32,7 @@ static char* itoa(int value, char* result, int base);
 /*=====[Definiciones de variables globales privadas]=========================*/
 static volatile float valorVoltaje;
 static volatile float campomaggaus;
-static volatile float valorAnalogico;
+static volatile float valorAnalogicoProm;
 
 /*=====[Funcion principal, punto de entrada al programa luegp de encender]===*/
 
@@ -51,7 +51,7 @@ int main (void){
 	delay(3000);
 
 	lcdClear(); // Borrar la pantalla
-	static volatile uint16_t muestra[1024];
+	//static volatile uint16_t muestra[1024];
 
 	static char uartBuff[10];
 	static char uartBuff2[10];
@@ -64,31 +64,18 @@ int main (void){
 	uint8_t valor=0;
 	delayConfig( &delay1, 500 );
 
-	// Saco u  promedio aqui para obtener un valor de tension sin aplicacion de
-	//campo magnetico
-	for (i=0;i<1024;i++){
-		muestra2[i]=adcRead( CH1 );
-		total=muestra2[i]+total;
-	}
-	promedio=total/1024;
-	valorAnalogico=(3.3/1024)*promedio;
 
-
+	valorAnalogicoProm=lecturaAnalogica();
 	while(TRUE) {
 
-
+		valorVoltaje=0;
 		total=0;
 		promedio=0;
 
 		valor=!gpioRead( TEC4 );
 		if(valor){
 			 gpioWrite( LED3, valor );
-			 for (i=0;i<1024;i++){
-			 		muestra2[i]=adcRead( CH1 );
-			 		total=muestra2[i]+total;
-			 	}
-			 	promedio=total/1024;
-			 	valorAnalogico=(3.3/1024)*promedio;
+			 valorAnalogicoProm=lecturaAnalogica();
 
 		}
 
@@ -96,19 +83,13 @@ int main (void){
 		if ( delayRead( &delay1 ) ){
 					lcdClear(); // Borrar la pantalla
 
-					/* Leo la Entrada Analogica AI0 - ADC0 CH1 */
-					//muestra = adcRead( CH1 );
-					//valorVoltaje=((muestra*3.3)/1023);
 
-					for (i=0;i<1024;i++){
-						muestra[i]=adcRead( CH1 );
-						total=muestra[i]+total;
-					}
-					promedio=total/1024;
-					valorVoltaje=((promedio*3.3)/1024);
+					valorVoltaje=lecturaAnalogica();
+
+
 					//Aqui tendria que armar la ecuacion del campo magnetico
 
-					campomaggaus= (valorVoltaje-valorAnalogico)/0.0013;
+					campomaggaus= (valorVoltaje-valorAnalogicoProm)/0.0013;
 
 					floatToString(  campomaggaus, uartBuff2, 2 );
 					/* Envío la primer parte del mnesaje a la Uart */
@@ -164,7 +145,22 @@ char* itoa(int value, char* result, int base) {
 	return result;
 }
 
+float lecturaAnalogica(void){
+	uint32_t i=0;
+	volatile uint16_t muestra[1024]={0};
+	volatile uint32_t total=0;
+	volatile uint32_t promedio=0;
+	volatile float valorAnalogico;
 
+	for (i=0;i<1024;i++){
+		muestra[i]=adcRead( CH1 );
+		total=muestra[i]+total;
+	}
+	promedio=total/1024;
+	valorAnalogico=(3.3/1024)*promedio;
+	return valorAnalogico;
+
+}
 
 
 
