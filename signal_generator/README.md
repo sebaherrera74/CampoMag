@@ -32,6 +32,17 @@ sudo systemctl start pigpiod
 python3 /workspace/signal_generator/signal_gui.py
 ```
 
+## Uso en Google Colab (simulación)
+
+1. Sube el archivo `SignalGenerator_Simulation.ipynb` a Colab o ábrelo desde Google Drive.
+2. Ejecuta las celdas. Si deseas controles interactivos, instala widgets:
+
+```bash
+pip install ipywidgets matplotlib
+```
+
+3. Ajusta los sliders y visualiza la señal en voltios (asumiendo Vref 3.3 V).
+
 ## Uso
 
 1. Elige "MCP4725 (I2C)" o "PWM (GPIO)".
