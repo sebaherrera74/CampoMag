@@ -1,0 +1,3 @@
+adafruit-circuitpython-mcp4725>=1.4.13
+adafruit-blinka>=8.52.0
+pigpio>=1.78
