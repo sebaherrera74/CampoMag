@@ -32,6 +32,17 @@ sudo systemctl start pigpiod
 python3 /workspace/signal_generator/signal_gui.py
 ```
 
+## Prueba sin Raspberry (offline)
+
+CLI de simulación (genera PNG/CSV/WAV):
+
+```bash
+python3 /workspace/signal_generator/simulate_cli.py --waveform sine --freq 200 --fs 8000 --amp 0.8 --offset 0.5 --dur 0.05 --vref 3.3 --out signal.png --show
+```
+
+Formatos soportados por `--out`: `.png`, `.csv`, `.wav`.
+Opcionales: `pip install matplotlib scipy` para PNG/mostrar/WAV.
+
 ## Uso en Google Colab (simulación)
 
 1. Sube el archivo `SignalGenerator_Simulation.ipynb` a Colab o ábrelo desde Google Drive.
